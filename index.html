@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bord</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><meta name="theme-color" content="#2b579a"><meta name="description" content="Bord — online text editor">
+<style>
+:root{--blue:#2b579a;--ribbon:#f3f3f3;--line:#d2d0ce;--text:#201f1e;--hover:#e1dfdd;--act:#c7e0f4;--desk:#e6e6e6;--tab:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ribbon:#2b2b2b;--line:#444;--text:#f3f2f1;--hover:#3d3d3d;--act:#35506b;--desk:#1f1f1f;--tab:#333;color-scheme:dark}}
+:root[data-theme="dark"]{--ribbon:#2b2b2b;--line:#444;--text:#f3f2f1;--hover:#3d3d3d;--act:#35506b;--desk:#1f1f1f;--tab:#333;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--ribbon);color:var(--text);font:13px "Segoe UI",Calibri,Arial,sans-serif}
+#app{display:flex;flex-direction:column;height:100%}
+#title{background:var(--blue);color:#fff;display:flex;align-items:center;gap:10px;padding:4px 10px;font-size:12px}
+#title b{font-weight:600}#title .sp{flex:1;text-align:center}
+#title button{background:none;border:0;color:#fff;cursor:pointer;padding:2px 6px;border-radius:3px;font-size:14px}
+#title button:hover{background:rgba(255,255,255,.2)}
+#tabs{background:var(--blue);display:flex;gap:2px;padding:0 8px;overflow-x:auto}
+#tabs button{background:none;border:0;color:#fff;padding:6px 14px;cursor:pointer;font:inherit;border-radius:3px 3px 0 0;white-space:nowrap}
+#tabs button.on{background:var(--ribbon);color:var(--blue);font-weight:600}
+#tabs button:not(.on):hover{background:rgba(255,255,255,.15)}
+#ribbon{background:var(--ribbon);border-bottom:1px solid var(--line);min-height:92px;overflow-x:auto}
+.pane{display:none;height:100%;padding:4px 6px}.pane.on{display:flex}
+.grp{display:flex;flex-direction:column;border-right:1px solid var(--line);padding:0 8px;min-width:max-content}
+.grp .row{display:flex;flex-wrap:wrap;gap:2px;align-items:center;flex:1;max-width:330px}
+.grp .nm{text-align:center;font-size:11px;opacity:.7;padding-top:2px}
+.b{min-width:28px;height:26px;border:1px solid transparent;background:none;color:var(--text);border-radius:3px;cursor:pointer;font:inherit;padding:0 5px;display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.b:hover{background:var(--hover);border-color:var(--line)}.b.on{background:var(--act);border-color:#6aa7d8}
+.big{flex-direction:column;height:56px;min-width:54px;font-size:11px}.big span{font-size:22px;line-height:1}
+select,input[type=number]{height:24px;border:1px solid var(--line);background:var(--tab);color:var(--text);font:inherit;border-radius:2px}
+input[type=color]{width:22px;height:22px;padding:0;border:1px solid var(--line);background:none;cursor:pointer}
+#desk{flex:1;overflow:auto;background:var(--desk);padding:24px 12px}
+#zoomer{transform-origin:top center;width:max-content;margin:0 auto}
+#page{background:#fff;color:#000;width:794px;min-height:1123px;padding:96px 96px;margin:0 auto;box-shadow:0 1px 4px rgba(0,0,0,.35);outline:0;font:11pt Calibri,"Segoe UI",Arial,sans-serif;line-height:1.15;overflow-wrap:anywhere}
+#page.land{width:1123px;min-height:794px}
+#page p,#page div{margin:0 0 8pt}
+#page h1{font:16pt "Calibri Light",Calibri,sans-serif;color:#2f5496;margin:12pt 0 0}
+#page h2{font:13pt "Calibri Light",Calibri,sans-serif;color:#2f5496;margin:2pt 0 0}
+#page h3{font:12pt "Calibri Light",Calibri,sans-serif;color:#1f3763;margin:2pt 0 0}
+#page .title{font:28pt "Calibri Light",Calibri,sans-serif;margin:0 0 4pt}
+#page blockquote{margin:8pt 40px;font-style:italic;color:#404040;border-left:3px solid #8faadc;padding-left:10px}
+#page table{border-collapse:collapse;margin:6pt 0}#page td,#page th{border:1px solid #000;padding:4px 8px;min-width:60px}
+#page img{max-width:100%}
+.pb{border-top:2px dashed #999;margin:20px 0;text-align:center;font-size:10px;color:#999;page-break-after:always}
+#status{background:var(--blue);color:#fff;display:flex;align-items:center;gap:16px;padding:3px 10px;font-size:12px}
+#status .sp{flex:1}#status input{width:120px}#status button{background:none;border:0;color:#fff;cursor:pointer;font-size:15px}
+#title{flex-wrap:wrap}#title select{height:22px;font-size:12px;border-radius:2px;max-width:150px}
+#login{position:fixed;inset:0;z-index:99;background:var(--blue);display:none;align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) 12px}
+#login .card{background:var(--tab);color:var(--text);width:min(360px,100%);padding:24px;border-radius:4px;display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+#login h2{margin:0;font:600 26px "Segoe UI",sans-serif}
+#login input{height:32px;border:1px solid var(--line);background:var(--ribbon);color:var(--text);padding:0 8px;font:inherit}
+#plist{display:flex;flex-direction:column;gap:4px;max-height:180px;overflow:auto}#plist .b{justify-content:flex-start;height:32px}
+#lgo{background:var(--blue);color:#fff;height:34px}#lgo:hover{background:#1e4278}#lmsg{color:#c42b1c;min-height:16px;font-size:12px}#login small{opacity:.7}
+#find{display:none;position:fixed;top:110px;right:20px;background:var(--tab);border:1px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.3);padding:10px;z-index:9;gap:6px;flex-direction:column;width:260px}
+#find input{height:26px;border:1px solid var(--line);background:var(--ribbon);color:var(--text);padding:0 6px}
+#find .r{display:flex;gap:4px}
+#sheet{position:relative;--m:96px;width:max-content;margin:0 auto}
+#ruler{height:16px;margin:0 0 6px;border:1px solid var(--line);background:linear-gradient(90deg,#b7c7e2 var(--m),transparent var(--m),transparent calc(100% - var(--m)),#b7c7e2 calc(100% - var(--m))),repeating-linear-gradient(90deg,#777 0 1px,transparent 1px 37.8px) 0 100%/100% 6px no-repeat,#fff}
+#hd,#ft{display:none;position:absolute;left:var(--m);right:var(--m);color:#555;font:9pt Calibri,Arial,sans-serif;outline:0;padding:2px;border:1px dashed transparent;z-index:1}#hd{top:36px}#ft{bottom:12px}#hd:focus,#ft:focus{border-color:#8faadc}
+#page table.nb td,#page table.nb th{border-color:transparent}
+@media print{#title,#tabs,#ribbon,#status,#find,#ruler{display:none!important}#hd,#ft{border:0}#desk{padding:0;background:#fff;overflow:visible}#zoomer{transform:none!important}#page{box-shadow:none;margin:0}.pb{border:0;color:transparent}}
+@media (max-width:820px){#page{width:100%;min-width:0;padding:32px 20px}}
+</style>
+</head>
+<body>
+<div id="login"><div class="card"><h2>Bord</h2><p id="ltxt" style="margin:0">Выберите профиль или создайте новый</p><div id="plist"></div><input id="pn" placeholder="Имя профиля" maxlength="30" onkeydown="if(event.key=='Enter')go()"><input id="pp" type="password" placeholder="Пароль (необязательно)" onkeydown="if(event.key=='Enter')go()"><div id="lmsg"></div><button class="b" id="lgo" onclick="go()"></button><small>Данные хранятся только в этом браузере</small></div></div>
+<div id="app">
+<div id="title"><button title="Создать" onclick="nw()">🗋</button><button title="Открыть .txt / .html" onclick="$('op').click()">📂</button><input type="file" id="op" accept=".txt,.html,.htm" hidden onchange="opn(this)"><button title="Сохранить" onclick="save(true)">💾</button><button title="Отменить" onclick="c('undo')">↶</button><button title="Повторить" onclick="c('redo')">↷</button><select id="docsel" onchange="openDoc(this.value)"></select><button title="Переименовать" onclick="renDoc()">✎</button><button title="Удалить документ" onclick="delDoc()">🗑</button><span class="sp"><b id="fn"></b> — Bord</span><span id="saved" style="opacity:.8"></span><select id="lang" onchange="setLang(this.value)"><option value="en">EN</option><option value="ru">RU</option><option value="pl">PL</option></select><button title="Тема" onclick="theme()">◐</button><button id="who" title="Выйти" onclick="logout()"></button></div>
+<div id="tabs"></div>
+<div id="ribbon">
+<div class="pane on" id="p0">
+ <div class="grp"><div class="row"><button class="b big" onclick="paste()"><span>📋</span>Вставить</button><button class="b" onclick="c('cut')">✂ Вырезать</button><button class="b" onclick="c('copy')">⧉ Копировать</button><button class="b" onclick="c('removeFormat')">Очистить формат</button><button class="b" onclick="cs()">Aa Регистр</button></div><div class="nm">Буфер обмена</div></div>
+ <div class="grp"><div class="row" style="width:300px">
+  <select id="ff" onchange="c('fontName',this.value);f()" style="width:130px"></select>
+  <select id="fs" onchange="size(this.value)" style="width:56px"></select>
+  <button class="b" onclick="size(+fs.value+1)" title="Увеличить">A▲</button><button class="b" onclick="size(Math.max(6,+fs.value-1))" title="Уменьшить">A▼</button>
+  <button class="b" id="bold" onclick="c('bold')"><b>Ж</b></button><button class="b" id="italic" onclick="c('italic')"><i>К</i></button><button class="b" id="underline" onclick="c('underline')"><u>Ч</u></button><button class="b" id="strikeThrough" onclick="c('strikeThrough')"><s>зач</s></button>
+  <button class="b" id="subscript" onclick="c('subscript')">x₂</button><button class="b" id="superscript" onclick="c('superscript')">x²</button>
+  <label class="b" title="Выделение цветом">🖍<input type="color" value="#ffff00" onchange="c('hiliteColor',this.value)"></label>
+  <label class="b" title="Цвет текста"><b style="color:#c00">A</b><input type="color" value="#c00000" onchange="c('foreColor',this.value)"></label>
+ </div><div class="nm">Шрифт</div></div>
+ <div class="grp"><div class="row" style="width:210px">
+  <button class="b" id="insertUnorderedList" onclick="c('insertUnorderedList')">• Список</button><button class="b" id="insertOrderedList" onclick="c('insertOrderedList')">1. Список</button>
+  <button class="b" onclick="c('outdent')">⇤</button><button class="b" onclick="c('indent')">⇥</button>
+  <button class="b" id="justifyLeft" onclick="c('justifyLeft')">≡◂</button><button class="b" id="justifyCenter" onclick="c('justifyCenter')">≡</button><button class="b" id="justifyRight" onclick="c('justifyRight')">▸≡</button><button class="b" id="justifyFull" onclick="c('justifyFull')">☰</button>
+  <select onchange="lh(this.value)" title="Интервал"><option>1.0</option><option selected>1.15</option><option>1.5</option><option>2.0</option><option>2.5</option></select>
+ </div><div class="nm">Абзац</div></div>
+ <div class="grp"><div class="row" style="width:200px">
+  <select id="st" onchange="style(this.value)" style="width:150px"><option value="p">Обычный</option><option value="title">Название</option><option value="h1">Заголовок 1</option><option value="h2">Заголовок 2</option><option value="h3">Заголовок 3</option><option value="blockquote">Цитата</option></select>
+ </div><div class="nm">Стили</div></div>
+ <div class="grp"><div class="row"><button class="b big" onclick="findOpen()"><span>🔍</span>Найти</button><button class="b" onclick="c('selectAll')">Выделить всё</button></div><div class="nm">Редактирование</div></div>
+</div>
+<div class="pane" id="p1">
+ <div class="grp"><div class="row"><button class="b big" onclick="pbreak()"><span>⤓</span>Разрыв</button><button class="b big" onclick="tbl()"><span>▦</span>Таблица</button><button class="b big" onclick="img.click()"><span>🖼</span>Рисунок</button><input type="file" id="img" accept="image/*" hidden onchange="pic(this)"></div><div class="nm">Вставка</div></div>
+ <div class="grp"><div class="row"><button class="b big" onclick="link()"><span>🔗</span>Ссылка</button><button class="b big" onclick="c('insertHorizontalRule')"><span>―</span>Линия</button><button class="b big" onclick="sym()"><span>Ω</span>Символ</button><button class="b big" onclick="dt()"><span>📅</span>Дата</button></div><div class="nm">Элементы</div></div>
+ <div class="grp"><div class="row"><button class="b big" onclick="hf('hd')"><span>⬒</span>Верхний</button><button class="b big" onclick="hf('ft')"><span>⬓</span>Нижний</button><button class="b big" onclick="pnum()"><span>#</span>Номер стр.</button></div><div class="nm">Колонтитулы</div></div>
+</div>
+<div class="pane" id="p2">
+ <div class="grp"><div class="row"><button class="b big" onclick="mar(96)"><span>▭</span>Обычные</button><button class="b big" onclick="mar(48)"><span>▯</span>Узкие</button><button class="b big" onclick="mar(144)"><span>▮</span>Широкие</button></div><div class="nm">Поля</div></div>
+ <div class="grp"><div class="row"><label>Все поля, см <input type="number" id="mc" value="2.5" min="0.5" max="6" step="0.5" style="width:60px" onchange="mar(this.value*37.8)"></label></div><div class="nm">Свои поля</div></div>
+ <div class="grp"><div class="row"><button class="b big" onclick="page.classList.remove('land')"><span>▯</span>Книжная</button><button class="b big" onclick="page.classList.add('land')"><span>▭</span>Альбомная</button></div><div class="nm">Ориентация</div></div>
+</div>
+<div class="pane" id="p3">
+ <div class="grp"><div class="row"><button class="b big" onclick="zoom(100)"><span>🔎</span>100%</button><button class="b big" onclick="zoom(75)"><span>⊟</span>75%</button><button class="b big" onclick="print()"><span>🖨</span>Печать</button><button class="b big" onclick="theme()"><span>◐</span>Тема</button></div><div class="nm">Просмотр</div></div>
+ <div class="grp"><div class="row"><button class="b big" onclick="$('ruler').style.display=$('ruler').style.display=='none'?'block':'none'"><span>📏</span>Линейка</button></div><div class="nm">Показать</div></div>
+ <div class="grp"><div class="row"><button class="b big" onclick="ex('doc')"><span>⬇</span>.doc</button><button class="b big" onclick="ex('html')"><span>⬇</span>.html</button><button class="b big" onclick="ex('txt')"><span>⬇</span>.txt</button></div><div class="nm">Экспорт</div></div>
+</div>
+<div class="pane" id="p4">
+ <div class="grp"><div class="row" style="width:260px"><button class="b" onclick="tt('ar')">＋ Строка</button><button class="b" onclick="tt('ac')">＋ Столбец</button><button class="b" onclick="tt('dr')">－ Строка</button><button class="b" onclick="tt('dc')">－ Столбец</button><button class="b" onclick="tt('dt')">🗑 Таблица</button></div><div class="nm">Строки и столбцы</div></div>
+ <div class="grp"><div class="row" style="width:230px"><button class="b" onclick="tt('mg')">⇔ Объединить вправо</button><button class="b" onclick="tt('bd')">▦ Границы</button><label class="b">Заливка ячейки <input type="color" value="#dbe5f1" onchange="shade(this.value)"></label></div><div class="nm">Ячейка</div></div>
+</div>
+</div>
+<div id="desk"><div id="zoomer"><div id="sheet"><div id="ruler"></div><div id="page" contenteditable="true" spellcheck="true"></div><div id="hd" contenteditable="true">Верхний колонтитул</div><div id="ft" contenteditable="true">Нижний колонтитул</div></div></div></div>
+<div id="find"><div class="r"><input id="fi" placeholder="Найти" style="flex:1"><button class="b" onclick="findOpen(1)">✕</button></div><input id="ri" placeholder="Заменить на"><div class="r"><button class="b" onclick="fnd()">Найти далее</button><button class="b" onclick="rep()">Заменить</button><button class="b" onclick="repAll()">Все</button></div></div>
+<div id="status"><span id="wc">Слов: 0</span><span id="cc">Знаков: 0</span><span id="pg">Страница 1 из 1</span><span class="sp"></span><button onclick="zoom(+zr.value-10)">−</button><input type="range" id="zr" min="40" max="200" value="100" oninput="zoom(this.value)"><button onclick="zoom(+zr.value+10)">+</button><span id="zv">100%</span></div>
+</div>
+<script>
+var page=document.getElementById('page'),$=function(i){return document.getElementById(i)};
+var fonts=['Calibri','Arial','Times New Roman','Cambria','Georgia','Verdana','Courier New','Segoe UI','Tahoma','Trebuchet MS'];
+$('ff').innerHTML=fonts.map(function(x){return '<option>'+x+'</option>'}).join('');
+$('fs').innerHTML=[8,9,10,11,12,14,16,18,20,24,28,36,48,72].map(function(x){return '<option'+(x==11?' selected':'')+'>'+x+'</option>'}).join('');
+['Главная','Вставка','Макет','Вид','Таблица'].forEach(function(n,i){var b=document.createElement('button');b.textContent=n;if(!i)b.className='on';b.onclick=function(){document.querySelectorAll('#tabs button').forEach(function(x,j){x.classList.toggle('on',j==i);$('p'+j).classList.toggle('on',j==i)})};$('tabs').appendChild(b)});
+function f(){page.focus()}
+function c(cmd,v){f();document.execCommand(cmd,false,v||null);upd()}
+function size(px){f();document.execCommand('fontSize',false,7);page.querySelectorAll('font[size="7"]').forEach(function(e){e.removeAttribute('size');e.style.fontSize=px+'pt'});$('fs').value=px;upd()}
+function style(v){f();if(v=='title'){document.execCommand('formatBlock',false,'p');var s=getSelection().anchorNode;while(s&&s.nodeType!=1)s=s.parentNode;if(s&&s!=page)s.className='title'}else{document.execCommand('formatBlock',false,v)}}
+function lh(v){f();var s=getSelection().anchorNode;while(s&&(s.nodeType!=1||s==page||!/^(P|DIV|H\d|LI|BLOCKQUOTE)$/.test(s.tagName))){if(s==page||!s)return;s=s.parentNode}if(s)s.style.lineHeight=v}
+function paste(){f();if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(function(t){document.execCommand('insertText',false,t)}).catch(function(){alert(T('Используйте Ctrl+V'))})}else alert(T('Используйте Ctrl+V'))}
+function tbl(){var r=+prompt(T('Строк:'),3),k=+prompt(T('Столбцов:'),3);if(!r||!k)return;var h='<table>'+('<tr>'+'<td><br></td>'.repeat(k)+'</tr>').repeat(r)+'</table><p><br></p>';c('insertHTML',h)}
+function pic(i){var fl=i.files[0];if(!fl)return;var rd=new FileReader();rd.onload=function(){c('insertImage',rd.result)};rd.readAsDataURL(fl);i.value=''}
+function link(){var u=prompt(T('Адрес ссылки:'),'https://');if(u)c('createLink',u)}
+function pbreak(){c('insertHTML','<div class="pb" contenteditable="false">— '+T('разрыв страницы')+' —</div><p><br></p>')}
+function sym(){var s=prompt(T('Символ: © ® ™ § ° ± × ÷ € ₽ ≈ ≠ ← → ∞'),'©');if(s)c('insertText',s)}
+function dt(){c('insertText',new Date().toLocaleDateString('ru-RU'))}
+function mar(p){p=Math.round(p);page.style.padding=p+'px';$('sheet').style.setProperty('--m',p+'px');$('mc').value=(p/37.8).toFixed(1)}
+function zoom(v){v=Math.min(200,Math.max(40,+v));$('zr').value=v;$('zv').textContent=v+'%';$('zoomer').style.transform='scale('+v/100+')'}
+function theme(){var r=document.documentElement,d=getComputedStyle(r).colorScheme=='dark';r.setAttribute('data-theme',d?'light':'dark')}
+function upd(){var t=page.innerText.trim();$('wc').textContent=T('Слов')+': '+(t?t.split(/\s+/).length:0);$('cc').textContent=T('Знаков')+': '+t.length;var n=Math.max(1,Math.ceil(page.scrollHeight/(page.classList.contains('land')?794:1123)));$('pg').textContent=T('Страница')+' 1 '+T('из')+' '+n;var fp=$('fpn');if(fp)fp.textContent=T('Страница')+' 1 '+T('из')+' '+n;
+ ['bold','italic','underline','strikeThrough','subscript','superscript','insertUnorderedList','insertOrderedList','justifyLeft','justifyCenter','justifyRight','justifyFull'].forEach(function(k){var e=$(k);if(e)try{e.classList.toggle('on',document.queryCommandState(k))}catch(x){}});
+ try{var n2=document.queryCommandValue('fontName').replace(/["']/g,'');if(n2&&fonts.indexOf(n2)>-1)$('ff').value=n2}catch(x){}}
+var tm;page.addEventListener('input',function(){upd();clearTimeout(tm);tm=setTimeout(save,500)});
+['keyup','mouseup'].forEach(function(e){page.addEventListener(e,upd)});
+page.addEventListener('keydown',function(e){if(e.ctrlKey&&e.key=='s'){e.preventDefault();save(true)}if(e.ctrlKey&&e.key=='f'){e.preventDefault();findOpen()}});
+function findOpen(x){var el=$('find');el.style.display=x?'none':'flex';if(!x)$('fi').focus()}
+function fnd(){var q=$('fi').value;if(!q)return;if(!window.find(q,false,false,true)){alert(T('Совпадений нет'))}}
+function rep(){var s=getSelection();if(s.toString()==$('fi').value){document.execCommand('insertText',false,$('ri').value)}fnd()}
+function repAll(){var q=$('fi').value;if(!q)return;var re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),w=document.createTreeWalker(page,4),n=[],x;while(x=w.nextNode())n.push(x);n.forEach(function(t){t.nodeValue=t.nodeValue.replace(re,$('ri').value)});upd();save()}
+['hd','ft'].forEach(function(k){$(k).addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(save,500)})});
+function hf(k){var e=$(k);e.style.display=e.style.display=='block'?'none':'block';if(e.style.display=='block')e.focus();save()}
+function pnum(){var e=$('ft');e.style.display='block';e.style.textAlign='center';e.innerHTML='<span id="fpn"></span>';upd();save()}
+function cs(){f();var s=getSelection().toString();if(!s)return;document.execCommand('insertText',false,s==s.toUpperCase()?s.toLowerCase():s.toUpperCase())}
+
+function opn(i){var fl=i.files[0];if(!fl)return;var r=new FileReader();r.onload=function(){var t=r.result;page.innerHTML=/\.html?$/i.test(fl.name)?t.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/ on\w+="[^"]*"/gi,''):'<p>'+t.replace(/&/g,'&amp;').replace(/</g,'&lt;').split(/\n/).join('</p><p>')+'</p>';upd();save()};r.readAsText(fl);i.value=''}
+function cell(){var s=getSelection().anchorNode;while(s&&s!=page&&!/^(TD|TH)$/.test(s.nodeName))s=s.parentNode;return s&&s!=page?s:null}
+function shade(v){var d=cell();if(d){d.style.background=v;save()}}
+function tt(a){var d=cell();if(!d){alert(T('Поставьте курсор в ячейку таблицы'));return}var r=d.parentNode,t=r.closest('table'),i=d.cellIndex;
+ if(a=='ar'){var n=r.cloneNode(true);n.querySelectorAll('td,th').forEach(function(x){x.innerHTML='<br>';x.removeAttribute('colspan')});r.after(n)}
+ if(a=='ac')[].forEach.call(t.rows,function(w){var x=w.insertCell(Math.min(i+1,w.cells.length));x.innerHTML='<br>'});
+ if(a=='dr')r.remove();
+ if(a=='dc')[].forEach.call(t.rows,function(w){if(w.cells[i])w.deleteCell(i)});
+ if(a=='dt')t.remove();
+ if(a=='bd')t.classList.toggle('nb');
+ if(a=='mg'){var nx=d.nextElementSibling;if(nx){d.colSpan=(d.colSpan||1)+(nx.colSpan||1);d.innerHTML+=nx.innerHTML;nx.remove()}}
+ upd();save()}
+
+var LS=localStorage,U=null,D=[],cur=null,sel=null,I={"Главная": ["Home", "Narzędzia główne"], "Вставка": ["Insert", "Wstawianie"], "Макет": ["Layout", "Układ"], "Вид": ["View", "Widok"], "Таблица": ["Table", "Tabela"], "Вставить": ["Paste", "Wklej"], "✂ Вырезать": ["✂ Cut", "✂ Wytnij"], "⧉ Копировать": ["⧉ Copy", "⧉ Kopiuj"], "Очистить формат": ["Clear format", "Wyczyść format"], "Aa Регистр": ["Aa Case", "Aa Wielkość liter"], "Буфер обмена": ["Clipboard", "Schowek"], "Шрифт": ["Font", "Czcionka"], "• Список": ["• Bullets", "• Punkty"], "1. Список": ["1. Numbering", "1. Numeracja"], "Абзац": ["Paragraph", "Akapit"], "Стили": ["Styles", "Style"], "Обычный": ["Normal", "Normalny"], "Название": ["Title", "Tytuł"], "Заголовок 1": ["Heading 1", "Nagłówek 1"], "Заголовок 2": ["Heading 2", "Nagłówek 2"], "Заголовок 3": ["Heading 3", "Nagłówek 3"], "Цитата": ["Quote", "Cytat"], "Найти": ["Find", "Znajdź"], "Выделить всё": ["Select all", "Zaznacz wszystko"], "Редактирование": ["Editing", "Edytowanie"], "зач": ["str", "prz"], "Увеличить": ["Grow font", "Zwiększ"], "Уменьшить": ["Shrink font", "Zmniejsz"], "Выделение цветом": ["Highlight", "Zakreślacz"], "Цвет текста": ["Font color", "Kolor czcionki"], "Интервал": ["Line spacing", "Odstępy"], "Отменить": ["Undo", "Cofnij"], "Повторить": ["Redo", "Ponów"], "Тема": ["Theme", "Motyw"], "Создать": ["New", "Nowy"], "Открыть .txt / .html": ["Open .txt / .html", "Otwórz .txt / .html"], "Сохранить": ["Save", "Zapisz"], "Переименовать": ["Rename", "Zmień nazwę"], "Удалить документ": ["Delete document", "Usuń dokument"], "Выйти": ["Sign out", "Wyloguj"], "Разрыв": ["Break", "Podział"], "Рисунок": ["Picture", "Obraz"], "Ссылка": ["Link", "Łącze"], "Линия": ["Line", "Linia"], "Символ": ["Symbol", "Symbol"], "Дата": ["Date", "Data"], "Элементы": ["Elements", "Elementy"], "Верхний": ["Header", "Nagłówek"], "Нижний": ["Footer", "Stopka"], "Номер стр.": ["Page no.", "Nr str."], "Колонтитулы": ["Header & footer", "Nagłówek i stopka"], "Обычные": ["Normal", "Zwykłe"], "Узкие": ["Narrow", "Wąskie"], "Широкие": ["Wide", "Szerokie"], "Поля": ["Margins", "Marginesy"], "Все поля, см": ["All margins, cm", "Marginesy, cm"], "Свои поля": ["Custom margins", "Własne marginesy"], "Книжная": ["Portrait", "Pionowa"], "Альбомная": ["Landscape", "Pozioma"], "Ориентация": ["Orientation", "Orientacja"], "Печать": ["Print", "Drukuj"], "Просмотр": ["Display", "Wyświetlanie"], "Линейка": ["Ruler", "Linijka"], "Показать": ["Show", "Pokaż"], "Экспорт": ["Export", "Eksport"], "＋ Строка": ["＋ Row", "＋ Wiersz"], "＋ Столбец": ["＋ Column", "＋ Kolumna"], "－ Строка": ["－ Row", "－ Wiersz"], "－ Столбец": ["－ Column", "－ Kolumna"], "🗑 Таблица": ["🗑 Table", "🗑 Tabela"], "Строки и столбцы": ["Rows & columns", "Wiersze i kolumny"], "⇔ Объединить вправо": ["⇔ Merge right", "⇔ Scal w prawo"], "▦ Границы": ["▦ Borders", "▦ Obramowanie"], "Заливка ячейки": ["Cell shading", "Cieniowanie"], "Ячейка": ["Cell", "Komórka"], "Заменить на": ["Replace with", "Zamień na"], "Найти далее": ["Find next", "Znajdź dalej"], "Заменить": ["Replace", "Zamień"], "Все": ["All", "Wszystko"], "Слов": ["Words", "Słowa"], "Знаков": ["Characters", "Znaki"], "Страница": ["Page", "Strona"], "из": ["of", "z"], "Выберите профиль или создайте новый": ["Choose a profile or create a new one", "Wybierz profil lub utwórz nowy"], "Имя профиля": ["Profile name", "Nazwa profilu"], "Пароль (необязательно)": ["Password (optional)", "Hasło (opcjonalne)"], "Создать профиль": ["Create profile", "Utwórz profil"], "Войти": ["Sign in", "Zaloguj"], "＋ Новый профиль": ["＋ New profile", "＋ Nowy profil"], "Данные хранятся только в этом браузере": ["Data is stored only in this browser", "Dane są przechowywane tylko w tej przeglądarce"], "Неверный пароль": ["Wrong password", "Błędne hasło"], "Введите имя": ["Enter a name", "Wpisz nazwę"], "Такой профиль уже есть": ["This profile already exists", "Taki profil już istnieje"], "Без имени": ["Untitled", "Bez nazwy"], "Название документа:": ["Document name:", "Nazwa dokumentu:"], "Нельзя удалить последний документ": ["You cannot delete the last document", "Nie można usunąć ostatniego dokumentu"], "Удалить документ?": ["Delete this document?", "Usunąć dokument?"], "Сохранено": ["Saved", "Zapisano"], "Используйте Ctrl+V": ["Use Ctrl+V", "Użyj Ctrl+V"], "Поставьте курсор в ячейку таблицы": ["Place the cursor in a table cell", "Umieść kursor w komórce tabeli"], "Совпадений нет": ["No matches", "Brak wyników"], "Строк:": ["Rows:", "Wiersze:"], "Столбцов:": ["Columns:", "Kolumny:"], "Адрес ссылки:": ["Link address:", "Adres łącza:"], "Символ: © ® ™ § ° ± × ÷ € ₽ ≈ ≠ ← → ∞": ["Symbol: © ® ™ § ° ± × ÷ € ₽ ≈ ≠ ← → ∞", "Symbol: © ® ™ § ° ± × ÷ € ₽ ≈ ≠ ← → ∞"], "разрыв страницы": ["page break", "podział strony"], "Верхний колонтитул": ["Header", "Nagłówek"], "Нижний колонтитул": ["Footer", "Stopka"]},lang=(function(){try{var q=LS.getItem('bord-lang');if(q)return q}catch(x){}var n=(navigator.language||'en').slice(0,2);return n=='ru'||n=='pl'?n:'en'})();
+var WEL={ru:'<p class="title">Добро пожаловать в Bord</p><p>Классический текстовый редактор в браузере. Документы хранятся в вашем профиле и работают без интернета.</p><h1>Возможности</h1><ul><li>Форматирование, таблицы, рисунки, колонтитулы</li><li>Несколько документов и профилей</li><li>Экспорт в .doc, .html, .txt</li></ul><p>Начните печатать здесь…</p>',en:'<p class="title">Welcome to Bord</p><p>A classic word processor in your browser. Documents live in your profile and work offline.</p><h1>Features</h1><ul><li>Formatting, tables, pictures, headers and footers</li><li>Multiple documents and profiles</li><li>Export to .doc, .html, .txt</li></ul><p>Start typing here…</p>',pl:'<p class="title">Witaj w Bord</p><p>Klasyczny edytor tekstu w przeglądarce. Dokumenty są w Twoim profilu i działają offline.</p><h1>Funkcje</h1><ul><li>Formatowanie, tabele, obrazy, nagłówki i stopki</li><li>Wiele dokumentów i profili</li><li>Eksport do .doc, .html, .txt</li></ul><p>Zacznij pisać tutaj…</p>'};
+function T(s){var a=I[s];return a&&lang!='ru'?a[lang=='pl'?1:0]:s}
+function K(k){return 'bord:'+U+':'+k}
+function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function tr(){var w=document.createTreeWalker(document.body,4),n,a=[];while(n=w.nextNode())a.push(n);a.forEach(function(n){if(n.parentNode.closest('#page,#hd,#ft,script,style'))return;if(n._k===undefined){n._r=n.nodeValue;n._k=n._r.trim()}if(I[n._k])n.nodeValue=n._r.replace(n._k,T(n._k))});
+ document.querySelectorAll('[title],[placeholder]').forEach(function(e){['title','placeholder'].forEach(function(t){var v=e.getAttribute(t);if(v===null)return;e['_'+t]=e['_'+t]||v;if(I[e['_'+t]])e.setAttribute(t,T(e['_'+t]))})})}
+function setLang(l){lang=l;try{LS.setItem('bord-lang',l)}catch(x){}document.documentElement.lang=l;page.lang=l;$('lang').value=l;tr();renderLogin();upd()}
+function users(){try{return JSON.parse(LS.getItem('bord-users'))||[]}catch(x){return[]}}
+async function H(p,s){if(!window.crypto||!crypto.subtle)return 'p'+btoa(unescape(encodeURIComponent(s+p)));var d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s+p));return Array.from(new Uint8Array(d)).map(function(b){return b.toString(16).padStart(2,'0')}).join('')}
+function showLogin(){$('login').style.display='flex';renderLogin()}
+function pick(id){sel=id;renderLogin()}
+function renderLogin(){var u=users(),x=u.find(function(v){return v.id==sel});if(!x)sel=null;$('plist').innerHTML=u.map(function(v){return '<button class="b'+(v.id==sel?' on':'')+'" onclick="pick(\''+v.id+'\')">👤 '+esc(v.name)+'</button>'}).join('')+'<button class="b'+(sel?'':' on')+'" onclick="pick(null)">'+T('＋ Новый профиль')+'</button>';
+ $('pn').style.display=sel?'none':'';$('pp').style.display=(!sel||(x&&x.hash))?'':'none';$('lgo').textContent=T(sel?'Войти':'Создать профиль');$('lmsg').textContent=''}
+async function go(){var u=users(),m=$('lmsg');
+ if(sel){var x=u.find(function(v){return v.id==sel});if(x.hash&&await H($('pp').value,x.salt)!=x.hash){m.textContent=T('Неверный пароль');return}enter(sel)}
+ else{var nm=$('pn').value.trim();if(!nm){m.textContent=T('Введите имя');return}if(u.some(function(v){return v.name.toLowerCase()==nm.toLowerCase()})){m.textContent=T('Такой профиль уже есть');return}
+  var salt=Math.random().toString(36).slice(2),pw=$('pp').value,n={id:Date.now().toString(36),name:nm,salt:salt,hash:pw?await H(pw,salt):''};u.push(n);LS.setItem('bord-users',JSON.stringify(u));enter(n.id)}
+ $('pp').value='';$('pn').value=''}
+function newDoc(name,html){return{id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),name:name,html:html,hd:T('Верхний колонтитул'),hdd:'none',ft:T('Нижний колонтитул'),fdd:'none',fa:'',pad:96,land:0}}
+function enter(id){U=id;try{sessionStorage.setItem('bord-session',id)}catch(x){}var us=users().find(function(x){return x.id==id});$('who').textContent='👤 '+us.name+' ⎋';$('login').style.display='none';
+ try{D=JSON.parse(LS.getItem(K('docs')))||[]}catch(x){D=[]}
+ if(!D.length)D=[newDoc(T('Без имени')+' 1',WEL[lang])];cur=null;fillSel();var c=LS.getItem(K('cur'));openDoc(D.some(function(x){return x.id==c})?c:D[0].id)}
+function logout(){save();try{sessionStorage.removeItem('bord-session')}catch(x){}U=null;cur=null;sel=null;page.innerHTML='';showLogin()}
+function fillSel(){$('docsel').innerHTML=D.map(function(d){return '<option value="'+d.id+'">'+esc(d.name)+'</option>'}).join('');if(cur)$('docsel').value=cur}
+function openDoc(id){if(U&&cur)save();cur=id;var d=D.find(function(x){return x.id==id})||D[0];cur=d.id;page.innerHTML=d.html;$('hd').innerHTML=d.hd;$('hd').style.display=d.hdd;$('ft').innerHTML=d.ft;$('ft').style.display=d.fdd;$('ft').style.textAlign=d.fa;page.classList.toggle('land',!!d.land);mar(d.pad||96);$('fn').textContent=d.name;$('docsel').value=cur;try{LS.setItem(K('cur'),cur)}catch(x){}upd()}
+function nw(){if(!U)return;save();var d=newDoc(T('Без имени')+' '+(D.length+1),'<p><br></p>');D.push(d);fillSel();openDoc(d.id);save()}
+function renDoc(){var d=D.find(function(x){return x.id==cur}),n=prompt(T('Название документа:'),d.name);if(n&&n.trim()){d.name=n.trim();$('fn').textContent=d.name;fillSel();save()}}
+function delDoc(){if(D.length<2){alert(T('Нельзя удалить последний документ'));return}if(!confirm(T('Удалить документ?')))return;D=D.filter(function(x){return x.id!=cur});cur=null;try{LS.setItem(K('docs'),JSON.stringify(D))}catch(x){}fillSel();openDoc(D[0].id)}
+function save(){if(!U||!cur)return;var d=D.find(function(x){return x.id==cur});if(!d)return;d.html=page.innerHTML;d.hd=$('hd').innerHTML;d.hdd=$('hd').style.display;d.ft=$('ft').innerHTML;d.fdd=$('ft').style.display;d.fa=$('ft').style.textAlign;d.pad=parseInt(page.style.padding)||96;d.land=page.classList.contains('land')?1:0;
+ try{LS.setItem(K('docs'),JSON.stringify(D));$('saved').textContent=T('Сохранено')+' '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}catch(x){$('saved').textContent='⚠'}}
+function dl(n,m,t){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},2000)}
+function ex(k){save();var d=D.find(function(x){return x.id==cur}),n=d.name.replace(/[\\\/:*?"<>|]+/g,'_');
+ if(k=='txt')return dl(n+'.txt','text/plain;charset=utf-8',page.innerText);
+ dl(n+'.'+k,k=='doc'?'application/msword':'text/html;charset=utf-8','<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>'+esc(d.name)+'</title><style>body{font-family:Calibri;font-size:11pt}table{border-collapse:collapse}td{border:1px solid #000;padding:4px}</style></head><body>'+page.innerHTML+'</body></html>')}
+addEventListener('pagehide',function(){save()});document.addEventListener('visibilitychange',function(){if(document.hidden)save()});
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+setLang(lang);var ss=null;try{ss=sessionStorage.getItem('bord-session')}catch(x){}
+if(ss&&users().some(function(x){return x.id==ss}))enter(ss);else showLogin();
+
+upd();
+</script>
+</body>
+</html>
