@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bord</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><meta name="theme-color" content="#2b579a"><meta name="description" content="Bord — online text editor">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{--blue:#2b579a;--ribbon:#f3f3f3;--line:#d2d0ce;--text:#201f1e;--hover:#e1dfdd;--act:#c7e0f4;--desk:#e6e6e6;--tab:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ribbon:#2b2b2b;--line:#444;--text:#f3f2f1;--hover:#3d3d3d;--act:#35506b;--desk:#1f1f1f;--tab:#333;color-scheme:dark}}
@@ -103,7 +104,7 @@ input[type=color]{width:22px;height:22px;padding:0;border:1px solid var(--line);
 <div class="pane" id="p3">
  <div class="grp"><div class="row"><button class="b big" onclick="zoom(100)"><span>🔎</span>100%</button><button class="b big" onclick="zoom(75)"><span>⊟</span>75%</button><button class="b big" onclick="print()"><span>🖨</span>Печать</button><button class="b big" onclick="theme()"><span>◐</span>Тема</button></div><div class="nm">Просмотр</div></div>
  <div class="grp"><div class="row"><button class="b big" onclick="$('ruler').style.display=$('ruler').style.display=='none'?'block':'none'"><span>📏</span>Линейка</button></div><div class="nm">Показать</div></div>
- <div class="grp"><div class="row"><button class="b big" onclick="ex('doc')"><span>⬇</span>.doc</button><button class="b big" onclick="ex('html')"><span>⬇</span>.html</button><button class="b big" onclick="ex('txt')"><span>⬇</span>.txt</button></div><div class="nm">Экспорт</div></div>
+ <div class="grp"><div class="row"><button class="b big" onclick="ex('doc')"><span>⬇</span>.doc</button><button class="b big" onclick="ex('html')"><span>⬇</span>.html</button><button class="b big" onclick="ex('txt')"><span>⬇</span>.txt</button><button class="b big" onclick="exPDF()"><span>⬇</span>.pdf</button></div><div class="nm">Экспорт</div></div>
 </div>
 <div class="pane" id="p4">
  <div class="grp"><div class="row" style="width:260px"><button class="b" onclick="tt('ar')">＋ Строка</button><button class="b" onclick="tt('ac')">＋ Столбец</button><button class="b" onclick="tt('dr')">－ Строка</button><button class="b" onclick="tt('dc')">－ Столбец</button><button class="b" onclick="tt('dt')">🗑 Таблица</button></div><div class="nm">Строки и столбцы</div></div>
@@ -198,6 +199,7 @@ function dl(n,m,t){var a=document.createElement('a');a.href=URL.createObjectURL(
 function ex(k){save();var d=D.find(function(x){return x.id==cur}),n=d.name.replace(/[\\\/:*?"<>|]+/g,'_');
  if(k=='txt')return dl(n+'.txt','text/plain;charset=utf-8',page.innerText);
  dl(n+'.'+k,k=='doc'?'application/msword':'text/html;charset=utf-8','<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>'+esc(d.name)+'</title><style>body{font-family:Calibri;font-size:11pt}table{border-collapse:collapse}td{border:1px solid #000;padding:4px}</style></head><body>'+page.innerHTML+'</body></html>')}
+function exPDF(){save();var d=D.find(function(x){return x.id==cur}),n=d.name.replace(/[\\\/:*?"<>|]+/g,'_');var el=document.getElementById('page');var isLand=page.classList.contains('land');var opt={margin:0,filename:n+'.pdf',image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'px',format:isLand?[1123,794]:[794,1123],orientation:isLand?'landscape':'portrait'}};html2pdf().set(opt).from(el).save()}
 addEventListener('pagehide',function(){save()});document.addEventListener('visibilitychange',function(){if(document.hidden)save()});
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
 setLang(lang);var ss=null;try{ss=sessionStorage.getItem('bord-session')}catch(x){}
