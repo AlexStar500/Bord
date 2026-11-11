@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bord</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><meta name="theme-color" content="#2b579a"><meta name="description" content="Bord — online text editor">
+<title>Bord</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="canonical" href="https://bord.rb-o.ru/"><meta property="og:title" content="Bord"><meta property="og:url" content="https://bord.rb-o.ru/"><meta property="og:image" content="https://bord.rb-o.ru/icon-512.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Bord"><meta name="theme-color" content="#2b579a"><meta name="description" content="Bord — online text editor">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{--blue:#2b579a;--ribbon:#f3f3f3;--line:#d2d0ce;--text:#201f1e;--hover:#e1dfdd;--act:#c7e0f4;--desk:#e6e6e6;--tab:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
@@ -52,6 +52,19 @@ input[type=color]{width:22px;height:22px;padding:0;border:1px solid var(--line);
 #login input{height:32px;border:1px solid var(--line);background:var(--ribbon);color:var(--text);padding:0 8px;font:inherit}
 #plist{display:flex;flex-direction:column;gap:4px;max-height:180px;overflow:auto}#plist .b{justify-content:flex-start;height:32px}
 #lgo{background:var(--blue);color:#fff;height:34px}#lgo:hover{background:#1e4278}#lmsg{color:#c42b1c;min-height:16px;font-size:12px}#login small{opacity:.7}
+#pal{display:none;position:fixed;z-index:400;grid-template-columns:repeat(10,18px);gap:3px;padding:8px;background:var(--tab);color:var(--text);border:1px solid var(--line);box-shadow:0 4px 18px rgba(0,0,0,.3)}
+#pal i{width:18px;height:18px;border:1px solid rgba(0,0,0,.25);cursor:pointer}#pal i:hover{outline:2px solid var(--blue)}#pal div{grid-column:1/-1;padding:4px;cursor:pointer}#pal div:hover{background:var(--act)}
+#cm{display:none;position:fixed;z-index:500;min-width:230px;background:var(--tab);color:var(--text);border:1px solid var(--line);box-shadow:0 4px 18px rgba(0,0,0,.3);padding:4px 0}
+#cm .mi{padding:5px 22px;cursor:pointer;white-space:nowrap}#cm .mi:hover{background:var(--act)}#cm hr{border:0;border-top:1px solid var(--line);margin:4px 0}#cm .mini{display:flex;gap:2px;padding:2px 6px}#cm .mini .b{padding:0;min-width:26px}
+#page .cols{display:flex;gap:16px}#page .cols>div{flex:1;border:1px dashed #bbb;padding:6px;margin:0}#page .shp{resize:both;overflow:hidden}.shp *{vector-effect:non-scaling-stroke}
+#show{display:none;position:fixed;inset:0;z-index:300;background:#fff;color:#111;overflow:hidden;user-select:none}#show.on{display:block}
+#show.th-dark{background:#1b1b1f;color:#f2f2f2}#show.th-blue{background:#1f3864;color:#fff}#show.th-grad{background:linear-gradient(135deg,#4facfe,#6a11cb);color:#fff}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;margin:-360px 0 0 -640px;padding:64px 80px;font:28px/1.3 Calibri,"Segoe UI",sans-serif;overflow:hidden}
+#sl{height:100%;display:flex;flex-direction:column;justify-content:center}#sl h1{font:600 56px "Calibri Light",Calibri,sans-serif;margin:0 0 .4em;color:inherit}#sl h2{font:600 44px "Calibri Light",Calibri,sans-serif;margin:0 0 .4em;color:inherit}#sl h3{font:600 36px Calibri,sans-serif;color:inherit}#sl .title{font:600 72px "Calibri Light",Calibri,sans-serif;text-align:center;margin:0 0 .3em}#sl p,#sl li{margin:0 0 .4em}#sl img{max-height:520px;object-fit:contain}#sl td{border:1px solid currentColor;padding:6px 12px}#sl .cols{display:flex;gap:40px}#sl .cols>div{flex:1}#sl blockquote{border-left:6px solid currentColor;margin:0;padding-left:24px;color:inherit}
+@keyframes fi{from{opacity:0}to{opacity:1}}@keyframes sl{from{transform:translateX(80px);opacity:0}to{transform:none;opacity:1}}@keyframes zm{from{transform:scale(.88);opacity:0}to{transform:none;opacity:1}}
+#sl.t-fade{animation:fi .5s}#sl.t-slide{animation:sl .45s}#sl.t-zoom{animation:zm .45s}
+#blk{position:absolute;inset:0;background:#000;display:none}#sinfo{position:absolute;right:16px;bottom:10px;font:14px sans-serif;opacity:.6}#sbar{position:absolute;left:0;bottom:0;height:4px;background:#4472c4}
+#laser{position:fixed;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:rgba(255,0,0,.85);box-shadow:0 0 12px 6px rgba(255,0,0,.5);pointer-events:none;display:none;z-index:310}
 #find{display:none;position:fixed;top:110px;right:20px;background:var(--tab);border:1px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.3);padding:10px;z-index:9;gap:6px;flex-direction:column;width:260px}
 #find input{height:26px;border:1px solid var(--line);background:var(--ribbon);color:var(--text);padding:0 6px}
 #find .r{display:flex;gap:4px}
@@ -66,19 +79,19 @@ input[type=color]{width:22px;height:22px;padding:0;border:1px solid var(--line);
 <body>
 <div id="login"><div class="card"><h2>Bord</h2><p id="ltxt" style="margin:0">Выберите профиль или создайте новый</p><div id="plist"></div><input id="pn" placeholder="Имя профиля" maxlength="30" onkeydown="if(event.key=='Enter')go()"><input id="pp" type="password" placeholder="Пароль (необязательно)" onkeydown="if(event.key=='Enter')go()"><div id="lmsg"></div><button class="b" id="lgo" onclick="go()"></button><small>Данные хранятся только в этом браузере</small></div></div>
 <div id="app">
-<div id="title"><button title="Создать" onclick="nw()">🗋</button><button title="Открыть .txt / .html" onclick="$('op').click()">📂</button><input type="file" id="op" accept=".txt,.html,.htm" hidden onchange="opn(this)"><button title="Сохранить" onclick="save(true)">💾</button><button title="Отменить" onclick="c('undo')">↶</button><button title="Повторить" onclick="c('redo')">↷</button><select id="docsel" onchange="openDoc(this.value)"></select><button title="Переименовать" onclick="renDoc()">✎</button><button title="Удалить документ" onclick="delDoc()">🗑</button><span class="sp"><b id="fn"></b> — Bord</span><span id="saved" style="opacity:.8"></span><select id="lang" onchange="setLang(this.value)"><option value="en">EN</option><option value="ru">RU</option><option value="pl">PL</option></select><button title="Тема" onclick="theme()">◐</button><button id="who" title="Выйти" onclick="logout()"></button></div>
+<div id="title"><button title="Создать" onclick="nw()">🗋</button><button title="Открыть .txt / .html" onclick="$('op').click()">📂</button><input type="file" id="op" accept=".txt,.html,.htm" hidden onchange="opn(this)"><button title="Сохранить" onclick="save(true)">💾</button><button title="Отменить" onclick="c('undo')">↶</button><button title="Повторить" onclick="c('redo')">↷</button><select id="docsel" onchange="openDoc(this.value)"></select><button title="Переименовать" onclick="renDoc()">✎</button><button title="Удалить документ" onclick="delDoc()">🗑</button><span class="sp"><b id="fn"></b> — Bord</span><span id="saved" style="opacity:.8"></span><select id="lang" onchange="setLang(this.value)"><option value="en">EN</option><option value="ru">RU</option><option value="pl">PL</option></select><button title="Тема" onclick="theme()">◐</button><button id="inst" title="Установить приложение" style="display:none" onclick="inst()">⤓</button><button id="who" title="Выйти" onclick="logout()"></button></div>
 <div id="tabs"></div>
 <div id="ribbon">
 <div class="pane on" id="p0">
  <div class="grp"><div class="row"><button class="b big" onclick="paste()"><span>📋</span>Вставить</button><button class="b" onclick="c('cut')">✂ Вырезать</button><button class="b" onclick="c('copy')">⧉ Копировать</button><button class="b" onclick="c('removeFormat')">Очистить формат</button><button class="b" onclick="cs()">Aa Регистр</button></div><div class="nm">Буфер обмена</div></div>
  <div class="grp"><div class="row" style="width:300px">
-  <select id="ff" onchange="c('fontName',this.value);f()" style="width:130px"></select>
+  <select id="ff" onchange="c('fontName',this.value)" style="width:130px"></select>
   <select id="fs" onchange="size(this.value)" style="width:56px"></select>
-  <button class="b" onclick="size(+fs.value+1)" title="Увеличить">A▲</button><button class="b" onclick="size(Math.max(6,+fs.value-1))" title="Уменьшить">A▼</button>
+  <button class="b" onclick="size(curPt()+1)" title="Увеличить">A▲</button><button class="b" onclick="size(Math.max(6,curPt()-1))" title="Уменьшить">A▼</button>
   <button class="b" id="bold" onclick="c('bold')"><b>Ж</b></button><button class="b" id="italic" onclick="c('italic')"><i>К</i></button><button class="b" id="underline" onclick="c('underline')"><u>Ч</u></button><button class="b" id="strikeThrough" onclick="c('strikeThrough')"><s>зач</s></button>
   <button class="b" id="subscript" onclick="c('subscript')">x₂</button><button class="b" id="superscript" onclick="c('superscript')">x²</button>
-  <label class="b" title="Выделение цветом">🖍<input type="color" value="#ffff00" onchange="c('hiliteColor',this.value)"></label>
-  <label class="b" title="Цвет текста"><b style="color:#c00">A</b><input type="color" value="#c00000" onchange="c('foreColor',this.value)"></label>
+  <button class="b" data-pal title="Выделение цветом" onclick="popPal(this,'hiliteColor')">🖍▾</button>
+  <button class="b" data-pal title="Цвет текста" onclick="popPal(this,'foreColor')"><b style="color:#c00">A</b>▾</button>
  </div><div class="nm">Шрифт</div></div>
  <div class="grp"><div class="row" style="width:210px">
   <button class="b" id="insertUnorderedList" onclick="c('insertUnorderedList')">• Список</button><button class="b" id="insertOrderedList" onclick="c('insertOrderedList')">1. Список</button>
@@ -110,8 +123,15 @@ input[type=color]{width:22px;height:22px;padding:0;border:1px solid var(--line);
  <div class="grp"><div class="row" style="width:260px"><button class="b" onclick="tt('ar')">＋ Строка</button><button class="b" onclick="tt('ac')">＋ Столбец</button><button class="b" onclick="tt('dr')">－ Строка</button><button class="b" onclick="tt('dc')">－ Столбец</button><button class="b" onclick="tt('dt')">🗑 Таблица</button></div><div class="nm">Строки и столбцы</div></div>
  <div class="grp"><div class="row" style="width:230px"><button class="b" onclick="tt('mg')">⇔ Объединить вправо</button><button class="b" onclick="tt('bd')">▦ Границы</button><label class="b">Заливка ячейки <input type="color" value="#dbe5f1" onchange="shade(this.value)"></label></div><div class="nm">Ячейка</div></div>
 </div>
+<div class="pane" id="p5">
+ <div class="grp"><div class="row"><button class="b big" onclick="startShow(0)"><span>▶</span>С начала</button><button class="b big" onclick="startShow(1)"><span>⏵</span>С текущего</button></div><div class="nm">Начать показ</div></div>
+ <div class="grp"><div class="row" style="width:270px"><button class="b big" onclick="lay('t')"><span>▤</span>Титульный</button><button class="b big" onclick="lay('x')"><span>☰</span>Заголовок и текст</button><button class="b big" onclick="lay('c')"><span>▥</span>Два столбца</button></div><div class="nm">Новый слайд</div></div>
+ <div class="grp"><div class="row" style="width:260px"><button class="b" title="Прямоугольник" onclick="shape('rect')">▭</button><button class="b" title="Скруглённый" onclick="shape('round')">▢</button><button class="b" title="Овал" onclick="shape('ell')">◯</button><button class="b" title="Треугольник" onclick="shape('tri')">△</button><button class="b" title="Стрелка" onclick="shape('arr')">➜</button><button class="b" title="Звезда" onclick="shape('star')">★</button><button class="b" title="Линия" onclick="shape('line')">╱</button><label class="b" title="Заливка фигуры"><input type="color" value="#4472c4" onchange="shapeCol=this.value"></label></div><div class="nm">Фигуры</div></div>
+ <div class="grp"><div class="row" style="width:200px"><select id="sm" title="Разделять слайды по"><option value="h2">Заголовкам 1–2 уровня</option><option value="h1">Заголовкам 1 уровня</option><option value="pb">Разрывам страниц</option></select><select id="sth" title="Тема показа"><option value="light">Светлая</option><option value="dark">Тёмная</option><option value="blue">Синяя</option><option value="grad">Градиент</option></select><select id="str" title="Переход"><option value="fade">Затухание</option><option value="slide">Сдвиг</option><option value="zoom">Масштаб</option><option value="none">Нет</option></select></div><div class="nm">Оформление</div></div>
+</div>
 </div>
 <div id="desk"><div id="zoomer"><div id="sheet"><div id="ruler"></div><div id="page" contenteditable="true" spellcheck="true"></div><div id="hd" contenteditable="true">Верхний колонтитул</div><div id="ft" contenteditable="true">Нижний колонтитул</div></div></div></div>
+<div id="pal"></div><div id="cm"></div><input type="color" id="cc2" style="position:fixed;opacity:0;pointer-events:none;width:0;height:0" onchange="setCol(this.value)"><div id="show"><div id="stage"><div id="sl"></div></div><div id="blk"></div><div id="sinfo"><span id="stime">00:00</span> · <span id="scnt"></span></div><div id="sbar"></div></div><div id="laser"></div>
 <div id="find"><div class="r"><input id="fi" placeholder="Найти" style="flex:1"><button class="b" onclick="findOpen(1)">✕</button></div><input id="ri" placeholder="Заменить на"><div class="r"><button class="b" onclick="fnd()">Найти далее</button><button class="b" onclick="rep()">Заменить</button><button class="b" onclick="repAll()">Все</button></div></div>
 <div id="status"><span id="wc">Слов: 0</span><span id="cc">Знаков: 0</span><span id="pg">Страница 1 из 1</span><span class="sp"></span><button onclick="zoom(+zr.value-10)">−</button><input type="range" id="zr" min="40" max="200" value="100" oninput="zoom(this.value)"><button onclick="zoom(+zr.value+10)">+</button><span id="zv">100%</span></div>
 </div>
@@ -120,7 +140,7 @@ var page=document.getElementById('page'),$=function(i){return document.getElemen
 var fonts=['Calibri','Arial','Times New Roman','Cambria','Georgia','Verdana','Courier New','Segoe UI','Tahoma','Trebuchet MS'];
 $('ff').innerHTML=fonts.map(function(x){return '<option>'+x+'</option>'}).join('');
 $('fs').innerHTML=[8,9,10,11,12,14,16,18,20,24,28,36,48,72].map(function(x){return '<option'+(x==11?' selected':'')+'>'+x+'</option>'}).join('');
-['Главная','Вставка','Макет','Вид','Таблица'].forEach(function(n,i){var b=document.createElement('button');b.textContent=n;if(!i)b.className='on';b.onclick=function(){document.querySelectorAll('#tabs button').forEach(function(x,j){x.classList.toggle('on',j==i);$('p'+j).classList.toggle('on',j==i)})};$('tabs').appendChild(b)});
+['Главная','Вставка','Макет','Вид','Таблица','Презентация'].forEach(function(n,i){var b=document.createElement('button');b.textContent=n;if(!i)b.className='on';b.onclick=function(){document.querySelectorAll('#tabs button').forEach(function(x,j){x.classList.toggle('on',j==i);$('p'+j).classList.toggle('on',j==i)})};$('tabs').appendChild(b)});
 function f(){page.focus()}
 function c(cmd,v){f();document.execCommand(cmd,false,v||null);upd()}
 function size(px){f();document.execCommand('fontSize',false,7);page.querySelectorAll('font[size="7"]').forEach(function(e){e.removeAttribute('size');e.style.fontSize=px+'pt'});$('fs').value=px;upd()}
@@ -138,7 +158,7 @@ function zoom(v){v=Math.min(200,Math.max(40,+v));$('zr').value=v;$('zv').textCon
 function theme(){var r=document.documentElement,d=getComputedStyle(r).colorScheme=='dark';r.setAttribute('data-theme',d?'light':'dark')}
 function upd(){var t=page.innerText.trim();$('wc').textContent=T('Слов')+': '+(t?t.split(/\s+/).length:0);$('cc').textContent=T('Знаков')+': '+t.length;var n=Math.max(1,Math.ceil(page.scrollHeight/(page.classList.contains('land')?794:1123)));$('pg').textContent=T('Страница')+' 1 '+T('из')+' '+n;var fp=$('fpn');if(fp)fp.textContent=T('Страница')+' 1 '+T('из')+' '+n;
  ['bold','italic','underline','strikeThrough','subscript','superscript','insertUnorderedList','insertOrderedList','justifyLeft','justifyCenter','justifyRight','justifyFull'].forEach(function(k){var e=$(k);if(e)try{e.classList.toggle('on',document.queryCommandState(k))}catch(x){}});
- try{var n2=document.queryCommandValue('fontName').replace(/["']/g,'');if(n2&&fonts.indexOf(n2)>-1)$('ff').value=n2}catch(x){}}
+ try{var n2=document.queryCommandValue('fontName').replace(/["']/g,'');if(n2&&fonts.indexOf(n2)>-1)$('ff').value=n2}catch(x){}sync()}
 var tm;page.addEventListener('input',function(){upd();clearTimeout(tm);tm=setTimeout(save,500)});
 ['keyup','mouseup'].forEach(function(e){page.addEventListener(e,upd)});
 page.addEventListener('keydown',function(e){if(e.ctrlKey&&e.key=='s'){e.preventDefault();save(true)}if(e.ctrlKey&&e.key=='f'){e.preventDefault();findOpen()}});
@@ -202,6 +222,89 @@ function ex(k){save();var d=D.find(function(x){return x.id==cur}),n=d.name.repla
 function exPDF(){save();var d=D.find(function(x){return x.id==cur}),n=d.name.replace(/[\\\/:*?"<>|]+/g,'_');var el=document.getElementById('page');var isLand=page.classList.contains('land');var opt={margin:0,filename:n+'.pdf',image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'px',format:isLand?[1123,794]:[794,1123],orientation:isLand?'landscape':'portrait'}};html2pdf().set(opt).from(el).save()}
 addEventListener('pagehide',function(){save()});document.addEventListener('visibilitychange',function(){if(document.hidden)save()});
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+
+
+
+Object.assign(I,{"Презентация": ["Slideshow", "Pokaz slajdów"], "С начала": ["From start", "Od początku"], "С текущего": ["From current", "Od bieżącego"], "Начать показ": ["Start show", "Rozpocznij pokaz"], "Разделять слайды по": ["Split slides by", "Dziel slajdy wg"], "Заголовкам 1–2 уровня": ["Headings 1–2", "Nagłówkom 1–2"], "Заголовкам 1 уровня": ["Heading 1", "Nagłówkom 1"], "Разрывам страниц": ["Page breaks", "Podziałom stron"], "Тема показа": ["Show theme", "Motyw pokazu"], "Светлая": ["Light", "Jasny"], "Тёмная": ["Dark", "Ciemny"], "Синяя": ["Blue", "Niebieski"], "Градиент": ["Gradient", "Gradient"], "Переход": ["Transition", "Przejście"], "Нет": ["None", "Brak"], "Затухание": ["Fade", "Zanikanie"], "Сдвиг": ["Push", "Przesunięcie"], "Масштаб": ["Zoom", "Powiększenie"], "Оформление": ["Design", "Projekt"], "Новый слайд": ["New slide", "Nowy slajd"], "Титульный": ["Title", "Tytułowy"], "Заголовок и текст": ["Title & text", "Tytuł i tekst"], "Два столбца": ["Two columns", "Dwie kolumny"], "Фигуры": ["Shapes", "Kształty"], "Заливка фигуры": ["Shape fill", "Wypełnienie kształtu"], "Прямоугольник": ["Rectangle", "Prostokąt"], "Скруглённый": ["Rounded", "Zaokrąglony"], "Овал": ["Oval", "Owal"], "Треугольник": ["Triangle", "Trójkąt"], "Стрелка": ["Arrow", "Strzałka"], "Звезда": ["Star", "Gwiazda"], "Заголовок слайда": ["Slide title", "Tytuł slajdu"], "Подзаголовок": ["Subtitle", "Podtytuł"], "Текст слайда": ["Slide text", "Tekst slajdu"], "Левый столбец": ["Left column", "Lewa kolumna"], "Правый столбец": ["Right column", "Prawa kolumna"], "Нет слайдов: добавьте заголовки или разрывы страниц": ["No slides: add headings or page breaks", "Brak slajdów: dodaj nagłówki lub podziały stron"], "Авто": ["Automatic", "Automatyczny"], "Нет цвета": ["No color", "Brak koloru"], "Другие цвета…": ["More colors…", "Więcej kolorów…"], "Вырезать": ["Cut", "Wytnij"], "Копировать": ["Copy", "Kopiuj"], "Добавить в словарь": ["Add to dictionary", "Dodaj do słownika"], "Удалить из словаря": ["Remove from dictionary", "Usuń ze słownika"], "Проверка орфографии": ["Spell check", "Sprawdzanie pisowni"], "Ссылка…": ["Link…", "Łącze…"], "Рисунок…": ["Picture…", "Obraz…"], "Таблица…": ["Table…", "Tabela…"], "Вставить строку": ["Insert row", "Wstaw wiersz"], "Вставить столбец": ["Insert column", "Wstaw kolumnę"], "Удалить строку": ["Delete row", "Usuń wiersz"], "Удалить столбец": ["Delete column", "Usuń kolumnę"], "Размер 25%": ["Size 25%", "Rozmiar 25%"], "Размер 50%": ["Size 50%", "Rozmiar 50%"], "Размер 100%": ["Size 100%", "Rozmiar 100%"], "Удалить рисунок": ["Delete picture", "Usuń obraz"], "Открыть ссылку": ["Open link", "Otwórz łącze"], "Убрать ссылку": ["Remove link", "Usuń łącze"], "Установить приложение": ["Install app", "Zainstaluj aplikację"]});
+var SR=null,SE=null,dict=[],shapeCol='#4472c4',DP=null;
+document.addEventListener('selectionchange',function(){var q=getSelection();if(!q.rangeCount)return;var n=q.anchorNode,e=[page,$('hd'),$('ft')].find(function(x){return x.contains(n)});if(e){SE=e;SR=q.getRangeAt(0).cloneRange()}});
+function keep(){var q=getSelection();if(q.rangeCount&&(SE||page).contains(q.anchorNode))SR=q.getRangeAt(0).cloneRange()}
+function rs(){var e=SE||page;e.focus();if(SR){var q=getSelection();q.removeAllRanges();q.addRange(SR)}try{document.execCommand('styleWithCSS',false,true)}catch(x){}}
+function f(){rs()}
+function c(cmd,v){rs();document.execCommand(cmd,false,v||null);keep();upd()}
+function paste(){rs();if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(function(t){rs();document.execCommand('insertText',false,t);keep();upd()}).catch(function(){alert(T('Используйте Ctrl+V'))})}else alert(T('Используйте Ctrl+V'))}
+function curPt(){if(!SR)return 11;var n=SR.startContainer;if(n.nodeType==3)n=n.parentNode;return Math.round(parseFloat(getComputedStyle(n).fontSize)*.75)||11}
+function size(px){rs();var q=getSelection();if(!q.rangeCount)return;var r=q.getRangeAt(0);
+ if(r.collapsed){var sp=document.createElement('span');sp.style.fontSize=px+'pt';sp.textContent='\u200b';r.insertNode(sp);var z=document.createRange();z.setStart(sp.firstChild,1);z.collapse(true);q.removeAllRanges();q.addRange(z)}
+ else{document.execCommand('styleWithCSS',false,false);document.execCommand('fontSize',false,7);(SE||page).querySelectorAll('font[size="7"]').forEach(function(e){e.removeAttribute('size');e.style.fontSize=px+'pt'})}
+ keep();upd()}
+function sync(){if(!SR)return;var n=SR.startContainer;if(n.nodeType==3)n=n.parentNode;if(!n||!n.closest||!page.contains(n))return;var pt=curPt(),o=$('fs');if(![].some.call(o.options,function(x){return x.value==pt}))o.add(new Option(pt,pt));o.value=pt;
+ var b=n.closest('h1,h2,h3,blockquote,p,div,li');if(b&&b!=page){$('st').value=b.classList.contains('title')?'title':/^H[123]$/.test(b.tagName)?b.tagName.toLowerCase():b.tagName=='BLOCKQUOTE'?'blockquote':'p'}}
+function hx(h,s,l){s/=100;l/=100;var a=s*Math.min(l,1-l),g=function(n){var k=(n+h/30)%12,v=l-a*Math.max(-1,Math.min(k-3,9-k,1));return Math.round(255*v).toString(16).padStart(2,'0')};return '#'+g(0)+g(8)+g(4)}
+function popPal(b,cmd){var p=$('pal');if(p.style.display=='grid'&&p._b==b){p.style.display='none';return}p._b=b;p._c=cmd;p.innerHTML='';var cl=[];for(var i=0;i<10;i++){var g=Math.round(i*255/9).toString(16).padStart(2,'0');cl.push('#'+g+g+g)}[28,42,58,74].forEach(function(l){for(var h=0;h<360;h+=36)cl.push(hx(h,85,l))});
+ cl.forEach(function(k){var e=document.createElement('i');e.style.background=k;e.onclick=function(){setCol(k)};p.appendChild(e)});
+ [[cmd=='foreColor'?'Авто':'Нет цвета',cmd=='foreColor'?'#000000':'transparent'],['Другие цвета…',0]].forEach(function(o){var d=document.createElement('div');d.textContent=T(o[0]);d.onclick=function(){o[1]?setCol(o[1]):$('cc2').click()};p.appendChild(d)});
+ var r=b.getBoundingClientRect();p.style.display='grid';p.style.left=Math.max(0,Math.min(r.left,innerWidth-230))+'px';p.style.top=r.bottom+'px'}
+function setCol(k){var p=$('pal');p.style.display='none';rs();document.execCommand(p._c,false,k);keep();upd()}
+function cell(){var q=getSelection(),s=(q.anchorNode&&page.contains(q.anchorNode))?q.anchorNode:(SR&&SR.startContainer);while(s&&s!=page&&!/^(TD|TH)$/.test(s.nodeName))s=s.parentNode;return s&&s!=page?s:null}
+function shade(v){var d=cell();if(d){d.style.background=v;save()}}
+document.addEventListener('mousedown',function(e){var t=e.target;if(!t.closest)return;if(t.closest('#ribbon .b,#tabs button,#pal,#cm')&&!t.closest('select,input'))e.preventDefault();if(!t.closest('#cm'))$('cm').style.display='none';if(!t.closest('#pal,[data-pal]'))$('pal').style.display='none'});
+/* spelling dictionary */
+function sv(){try{LS.setItem(K('dict'),JSON.stringify(dict))}catch(x){}}
+function addWord(w){if(!dict.some(function(x){return x.toLowerCase()==w.toLowerCase()}))dict.push(w);sv();applyDict();SR=null;save()}
+function delWord(w){dict=dict.filter(function(x){return x.toLowerCase()!=w.toLowerCase()});sv();page.querySelectorAll('[data-ok]').forEach(function(e){if(e.textContent.toLowerCase()==w.toLowerCase())e.replaceWith(document.createTextNode(e.textContent))});page.normalize();SR=null;save()}
+function applyDict(){if(!dict.length)return;var re=new RegExp('(?<![\\p{L}\\p{N}])('+dict.map(function(x){return x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}).join('|')+')(?![\\p{L}\\p{N}])','giu'),w=document.createTreeWalker(page,4),a=[],n;while(n=w.nextNode())a.push(n);
+ a.forEach(function(t){if(t.parentNode.closest('[data-ok]'))return;var s=t.nodeValue,m,l=0,fr=document.createDocumentFragment(),h=0;re.lastIndex=0;while(m=re.exec(s)){fr.appendChild(document.createTextNode(s.slice(l,m.index)));var sp=document.createElement('span');sp.setAttribute('data-ok','');sp.setAttribute('spellcheck','false');sp.textContent=m[0];fr.appendChild(sp);l=m.index+m[0].length;h=1}if(h){fr.appendChild(document.createTextNode(s.slice(l)));t.parentNode.replaceChild(fr,t)}})}
+page.addEventListener('focusout',function(){applyDict()});
+/* context menu */
+function pr(x,y){var r=null;if(document.caretRangeFromPoint)r=document.caretRangeFromPoint(x,y);else if(document.caretPositionFromPoint){var p=document.caretPositionFromPoint(x,y);if(p){r=document.createRange();r.setStart(p.offsetNode,p.offset);r.collapse(true)}}return r}
+function wd(){var q=getSelection();if(!q.rangeCount)return null;var r=q.getRangeAt(0),re=/[\p{L}\p{N}'’-]/u;if(!r.collapsed){var t=q.toString().trim();return /^[\p{L}\p{N}'’-]+$/u.test(t)?t:null}var n=r.startContainer;if(n.nodeType!=3)return null;var v=n.nodeValue,a=r.startOffset,b=a;while(a>0&&re.test(v[a-1]))a--;while(b<v.length&&re.test(v[b]))b++;return a<b?v.slice(a,b):null}
+document.addEventListener('contextmenu',function(e){var ed=e.target.closest&&e.target.closest('#page,#hd,#ft');if(!ed)return;e.preventDefault();SE=ed;var q=getSelection(),ins=false;if(q.rangeCount&&!q.isCollapsed){var rr=q.getRangeAt(0).getClientRects();for(var i=0;i<rr.length;i++){var b=rr[i];if(e.clientX>=b.left&&e.clientX<=b.right&&e.clientY>=b.top&&e.clientY<=b.bottom)ins=true}}
+ if(e.target.tagName=='IMG'){var z=document.createRange();z.selectNode(e.target);q.removeAllRanges();q.addRange(z);SR=z.cloneRange()}else if(!ins){var r=pr(e.clientX,e.clientY);if(r){q.removeAllRanges();q.addRange(r);SR=r.cloneRange()}}
+ showCM(e.clientX,e.clientY,e.target)});
+function showCM(x,y,t){var m=$('cm'),w=wd(),cl=cell(),im=t.tagName=='IMG'?t:null,ok=t.closest('[data-ok]'),lk=t.closest('a');m.innerHTML='';
+ var mn=document.createElement('div');mn.className='mini';[['<b>Ж</b>','bold'],['<i>К</i>','italic'],['<u>Ч</u>','underline'],['≡◂','justifyLeft'],['≡','justifyCenter'],['▸≡','justifyRight'],['•','insertUnorderedList']].forEach(function(o){var b=document.createElement('button');b.className='b';b.innerHTML=o[0];b.onclick=function(){hideCM();c(o[1])};mn.appendChild(b)});m.appendChild(mn);
+ function it(l,fn,raw){var d=document.createElement('div');d.className='mi';d.textContent=raw?l:T(l);d.onclick=function(){hideCM();fn()};m.appendChild(d)}
+ function hr(){m.appendChild(document.createElement('hr'))}
+ hr();it('Вырезать',function(){c('cut')});it('Копировать',function(){c('copy')});it('Вставить',paste);hr();
+ if(ok)it(T('Удалить из словаря')+': «'+ok.textContent+'»',function(){delWord(ok.textContent)},1);else if(w)it(T('Добавить в словарь')+': «'+w+'»',function(){addWord(w)},1);
+ it(T('Проверка орфографии')+': '+(page.spellcheck?'✓':'✗'),function(){page.spellcheck=!page.spellcheck;try{LS.setItem('bord-spell',page.spellcheck?'1':'0')}catch(x){}},1);hr();
+ it('Ссылка…',link);it('Рисунок…',function(){$('img').click()});it('Таблица…',tbl);
+ if(lk){it('Открыть ссылку',function(){open(lk.href,'_blank')});it('Убрать ссылку',function(){c('unlink')})}
+ if(cl){hr();it('Вставить строку',function(){tt('ar')});it('Вставить столбец',function(){tt('ac')});it('Удалить строку',function(){tt('dr')});it('Удалить столбец',function(){tt('dc')});it('⇔ Объединить вправо',function(){tt('mg')})}
+ if(im){hr();['25%','50%','100%'].forEach(function(p){it('Размер '+p,function(){im.style.width=p;save()})});it('Удалить рисунок',function(){im.remove();save()})}
+ hr();it('Найти',findOpen);it('Выделить всё',function(){c('selectAll')});
+ m.style.display='block';m.style.left=Math.max(0,Math.min(x,innerWidth-m.offsetWidth-4))+'px';m.style.top=Math.max(0,Math.min(y,innerHeight-m.offsetHeight-4))+'px'}
+function hideCM(){$('cm').style.display='none'}
+addEventListener('resize',hideCM);addEventListener('scroll',hideCM,true);
+/* presentation */
+var SH={rect:'<rect x="2" y="2" width="96" height="96"/>',round:'<rect x="2" y="2" width="96" height="96" rx="18"/>',ell:'<ellipse cx="50" cy="50" rx="48" ry="48"/>',tri:'<polygon points="50,3 97,97 3,97"/>',arr:'<polygon points="3,35 60,35 60,8 97,50 60,92 60,65 3,65"/>',star:'<polygon points="50,3 61,38 97,38 68,60 79,95 50,73 21,95 32,60 3,38 39,38"/>',line:'<line x1="3" y1="97" x2="97" y2="3"/>'};
+function shape(k){c('insertHTML','<span class="shp" contenteditable="false" style="display:inline-block;width:120px;height:90px;vertical-align:middle"><svg viewBox="0 0 100 100" preserveAspectRatio="none" width="100%" height="100%" fill="'+(k=='line'?'none':shapeCol)+'" stroke="'+(k=='line'?shapeCol:'#2f528f')+'" stroke-width="'+(k=='line'?4:2)+'">'+SH[k]+'</svg></span>&nbsp;')}
+function lay(k){var h='<h1>'+T('Заголовок слайда')+'</h1>',B={t:'<p class="title">'+T('Заголовок слайда')+'</p><p style="text-align:center">'+T('Подзаголовок')+'</p>',x:h+'<ul><li>'+T('Текст слайда')+'</li></ul>',c:h+'<div class="cols"><div><ul><li>'+T('Левый столбец')+'</li></ul></div><div><ul><li>'+T('Правый столбец')+'</li></ul></div></div>'};c('insertHTML','<div class="pb" contenteditable="false">— '+T('разрыв страницы')+' —</div>'+B[k]+'<p><br></p>')}
+var SL=[],si=0,tmr=null,blk=false,laser=false;
+function slides(){var m=$('sm').value,out=[],cur=[],mp=[];function ok(a){return a.some(function(n){return (n.textContent||'').trim()||(n.querySelector&&n.querySelector('img,svg,table'))})}function fl(){if(ok(cur))out.push(cur);cur=[]}
+ [].forEach.call(page.childNodes,function(n,i){var g=n.tagName||'',k=n.classList,pb=k&&k.contains('pb');if(pb){fl();mp[i]=out.length;return}if(g=='H1'||(k&&k.contains('title'))||(g=='H2'&&m=='h2'))if(m!='pb')fl();mp[i]=out.length;cur.push(n.cloneNode(true))});fl();return{s:out,m:mp}}
+function startShow(fromCur){var r=slides();if(!r.s.length){alert(T('Нет слайдов: добавьте заголовки или разрывы страниц'));return}SL=r.s;si=0;
+ if(fromCur&&SR){var n=SR.startContainer;while(n&&n.parentNode!=page)n=n.parentNode;var ix=[].indexOf.call(page.childNodes,n);si=Math.min(SL.length-1,Math.max(0,r.m[ix]||0))}
+ var sh=$('show');sh.className='on th-'+$('sth').value;blk=false;$('blk').style.display='none';fit();render();try{if(sh.requestFullscreen)sh.requestFullscreen()}catch(x){}
+ var t0=Date.now();clearInterval(tmr);tmr=setInterval(function(){var q=Math.floor((Date.now()-t0)/1000);$('stime').textContent=('0'+(q/60|0)).slice(-2)+':'+('0'+q%60).slice(-2)},1000)}
+function render(){var sl=$('sl');sl.innerHTML='';SL[si].forEach(function(n){sl.appendChild(n.cloneNode(true))});sl.className='';void sl.offsetWidth;var t=$('str').value;if(t!='none')sl.className='t-'+t;$('scnt').textContent=(si+1)+' / '+SL.length;$('sbar').style.width=((si+1)/SL.length*100)+'%'}
+function fit(){$('stage').style.transform='scale('+Math.min(innerWidth/1280,innerHeight/720)+')'}
+function go2(d){if(blk){blk=false;$('blk').style.display='none';return}var n=si+d;if(n<0)return;if(n>=SL.length){endShow();return}si=n;render()}
+function endShow(){clearInterval(tmr);$('show').className='';$('laser').style.display='none';laser=false;if(document.fullscreenElement)document.exitFullscreen()}
+addEventListener('resize',fit);document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&$('show').classList.contains('on'))endShow()});
+$('show').addEventListener('click',function(e){go2(e.clientX<innerWidth/3?-1:1)});
+document.addEventListener('mousemove',function(e){if(laser){var l=$('laser');l.style.left=e.clientX+'px';l.style.top=e.clientY+'px'}});
+document.addEventListener('keydown',function(e){var on=$('show').classList.contains('on'),k=e.key;
+ if(on){e.preventDefault();if(k=='Escape')endShow();else if(/^(ArrowRight|ArrowDown|PageDown| |Enter)$/.test(k))go2(1);else if(/^(ArrowLeft|ArrowUp|PageUp|Backspace)$/.test(k))go2(-1);else if(k=='Home'){si=0;render()}else if(k=='End'){si=SL.length-1;render()}else if(k=='l'||k=='L'){laser=!laser;$('laser').style.display=laser?'block':'none'}else if(k=='b'||k=='B'||k=='.'){blk=!blk;$('blk').style.display=blk?'block':'none'}return}
+ if(k=='F5'){e.preventDefault();startShow(e.shiftKey?1:0)}if(k=='Escape')hideCM()});
+/* PWA install, domain-ready */
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();DP=e;$('inst').style.display=''});addEventListener('appinstalled',function(){$('inst').style.display='none'});
+function inst(){if(DP){DP.prompt();DP=null;$('inst').style.display='none'}}
+function exPDF(){save();var d=D.find(function(x){return x.id==cur}),n=d.name.replace(/[\\\/:*?"<>|]+/g,'_'),L=page.classList.contains('land');if(!window.html2pdf){print();return}html2pdf().set({margin:0,filename:n+'.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'px',format:L?[1123,794]:[794,1123],orientation:L?'landscape':'portrait'}}).from(page).save()}
+var _en=enter;enter=function(id){U=id;try{dict=JSON.parse(LS.getItem(K('dict')))||[]}catch(x){dict=[]}_en(id)};
+var _od=openDoc;openDoc=function(id){SR=null;SE=null;_od(id);applyDict()};
+try{if(LS.getItem('bord-spell')=='0')page.spellcheck=false}catch(x){}
 setLang(lang);var ss=null;try{ss=sessionStorage.getItem('bord-session')}catch(x){}
 if(ss&&users().some(function(x){return x.id==ss}))enter(ss);else showLogin();
 
